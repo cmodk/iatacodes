@@ -62,7 +62,7 @@ func (ic *IATACodes) RouteList() ([]RouteResponse, error) {
 
 	fs := FlightStatus{}
 
-	url := fmt.Sprintf("/v7/routes?limit=10&api_key=%s", ic.key)
+	url := fmt.Sprintf("/v7/routes?api_key=%s", ic.key)
 
 	resp, err := ic.sh.Get(url)
 	if err != nil {
@@ -84,7 +84,7 @@ func (ic *IATACodes) TimetableList(airport_iata string) ([]TimetableResponse, er
 		Response []TimetableResponse `json:"response"`
 	}{}
 
-	url := fmt.Sprintf("/v7/timetable?limit=10&iata_code=%s&api_key=%s", airport_iata, ic.key)
+	url := fmt.Sprintf("/v7/timetable?iata_code=%s&api_key=%s", airport_iata, ic.key)
 
 	resp, err := ic.sh.Get(url)
 	if err != nil {
