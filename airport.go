@@ -6,12 +6,14 @@ import (
 )
 
 type Airport struct {
-	IATA      string  `json:"code"`
-	Name      string  `json:"name"`
-	ICAO      string  `json:"icao"`
-	Longitude float64 `json:"lng"`
-	Latitude  float64 `json:"lat"`
-	Country   string  `json:"country"`
+	IATA         string  `json:"code"`
+	Name         string  `json:"name"`
+	ICAO         string  `json:"icao"`
+	Longitude    float64 `json:"lng"`
+	Latitude     float64 `json:"lat"`
+	Country      string  `json:"country"`
+	IsRailRoad   int     `json:"is_rail_road"`
+	IsBusStation int     `json:"is_bus_station"`
 }
 
 func (ic *IATACodes) AirportList() ([]Airport, error) {
