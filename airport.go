@@ -23,7 +23,29 @@ func (ic *IATACodes) AirportList() ([]Airport, error) {
 		Response []Airport `json:"response"`
 	}{}
 
-	url := fmt.Sprintf("/v6/airports?&api_key=%s", ic.key)
+	url := fmt.Sprintf("/v6/airports?api_key=%s", ic.key)
+
+	resp, err := ic.sh.Get(url)
+	if err != nil {
+		return []Airport{}, err
+	}
+
+	if err := json.Unmarshal([]byte(resp), &d); err != nil {
+		return []Airport{}, err
+	}
+
+	return d.Response, nil
+
+}
+
+func (ic *IATACodes) AirportGet(code string) ([]Airport, error) {
+
+	d := struct {
+		Request  ICRequest `json:"request"`
+		Response []Airport `json:"response"`
+	}{}
+
+	url := fmt.Sprintf("/v6/airports?api_key=%s&code=%s", ic.key, code)
 
 	resp, err := ic.sh.Get(url)
 	if err != nil {
