@@ -3,10 +3,12 @@ package iatacodes
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 type ICRequest struct {
 	Language string `json:"lang"`
+	Timezone string `json:"timezone"`
 }
 
 type RouteResponse struct {
@@ -77,12 +79,29 @@ func (ic *IATACodes) RouteList() ([]RouteResponse, error) {
 
 }
 
+type TimetableRequest struct {
+	Request  ICRequest           `json:"request"`
+	Response []TimetableResponse `json:"response"`
+}
+
+func (tr *TimetableRequest) CorrectTimes() {
+	location, err := time.LoadLocation(tr.Request.Timezone)
+	if err != nil {
+		panic(err)
+	}
+
+	for i, _ := range tr.Response {
+		r := &(tr.Response[i])
+
+		r.Departure.ScheduledTime.ChangeTimezone(location)
+		r.Departure.EstimatedTime.ChangeTimezone(location)
+		r.Departure.ActualTime.ChangeTimezone(location)
+	}
+}
+
 func (ic *IATACodes) TimetableList(airport_iata string) ([]TimetableResponse, error) {
 
-	d := struct {
-		Request  ICRequest           `json:"request"`
-		Response []TimetableResponse `json:"response"`
-	}{}
+	d := TimetableRequest{}
 
 	url := fmt.Sprintf("/v7/timetable?iata_code=%s&api_key=%s", airport_iata, ic.key)
 
@@ -94,6 +113,8 @@ func (ic *IATACodes) TimetableList(airport_iata string) ([]TimetableResponse, er
 	if err := json.Unmarshal([]byte(resp), &d); err != nil {
 		return []TimetableResponse{}, err
 	}
+
+	d.CorrectTimes()
 
 	return d.Response, nil
 

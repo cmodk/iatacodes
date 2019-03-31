@@ -26,5 +26,25 @@ func (it *IATATime) GetTime() time.Time {
 
 func (it *IATATime) GetTimePtr() *time.Time {
 	t := time.Time(*it)
+	if t.IsZero() {
+		return nil
+	}
 	return &t
+}
+
+func (it *IATATime) ChangeTimezone(loc *time.Location) {
+	t := it.GetTime()
+	new_time := time.Date(
+		t.Year(),
+		t.Month(),
+		t.Day(),
+		t.Hour(),
+		t.Minute(),
+		t.Second(),
+		t.Nanosecond(),
+		loc)
+
+	new_iata_time := IATATime(new_time)
+
+	*it = new_iata_time
 }
