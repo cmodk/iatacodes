@@ -3,12 +3,21 @@ package iatacodes
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 )
 
-type ICRequest struct {
-	Language string `json:"lang"`
+type ICRequestGeo struct {
 	Timezone string `json:"timezone"`
+}
+
+type ICRequestClient struct {
+	Geo ICRequestGeo `json:"geo"`
+}
+
+type ICRequest struct {
+	Language string          `json:"lang"`
+	Client   ICRequestClient `json:"client"`
 }
 
 type RouteResponse struct {
@@ -85,7 +94,11 @@ type TimetableRequest struct {
 }
 
 func (tr *TimetableRequest) CorrectTimes() {
-	location, err := time.LoadLocation(tr.Request.Timezone)
+	if debug {
+		log.Printf("Request timezone: %s\n", tr.Request.Client.Geo.Timezone)
+	}
+
+	location, err := time.LoadLocation(tr.Request.Client.Geo.Timezone)
 	if err != nil {
 		panic(err)
 	}
@@ -96,6 +109,11 @@ func (tr *TimetableRequest) CorrectTimes() {
 		r.Departure.ScheduledTime.ChangeTimezone(location)
 		r.Departure.EstimatedTime.ChangeTimezone(location)
 		r.Departure.ActualTime.ChangeTimezone(location)
+
+		r.Arrival.ScheduledTime.ChangeTimezone(location)
+		r.Arrival.EstimatedTime.ChangeTimezone(location)
+		r.Arrival.ActualTime.ChangeTimezone(location)
+
 	}
 }
 

@@ -1,6 +1,7 @@
 package iatacodes
 
 import (
+	"log"
 	"time"
 )
 
@@ -33,7 +34,18 @@ func (it *IATATime) GetTimePtr() *time.Time {
 }
 
 func (it *IATATime) ChangeTimezone(loc *time.Location) {
+
+	if it.GetTime().IsZero() {
+		if debug {
+			log.Printf("Zero time, ignore..\n")
+		}
+		return
+	}
+
 	t := it.GetTime()
+	if debug {
+		log.Printf("Original time %s to %s zone\n", t.Format(time.RFC3339), loc.String())
+	}
 	new_time := time.Date(
 		t.Year(),
 		t.Month(),
@@ -42,7 +54,11 @@ func (it *IATATime) ChangeTimezone(loc *time.Location) {
 		t.Minute(),
 		t.Second(),
 		t.Nanosecond(),
-		loc)
+		loc).UTC()
+
+	if debug {
+		log.Printf("Correct time %s in %s zone\n", new_time.Format(time.RFC3339), loc.String())
+	}
 
 	new_iata_time := IATATime(new_time)
 
