@@ -49,6 +49,8 @@ j4rBYKEMrltDR5FL1ZoXX/nUh8HCjLfn4g8wGTeGrODcQgPmlKidrv0PJFGUzpII
 lBlGGSW4gNfL1IYoakRwJiNiqZ+Gb7+6kHDSVneFeO/qJakXzlByjAA6quPbYzSf
 +AZxAeKCINT+b72x
 -----END CERTIFICATE-----`
+
+	debug = false
 )
 
 func New(k string, logger *logrus.Logger) *IATACodes {
@@ -69,6 +71,7 @@ func New(k string, logger *logrus.Logger) *IATACodes {
 }
 
 func (iatacodes *IATACodes) SetDebug(d bool) {
+	debug = d
 	iatacodes.debug = d
 	iatacodes.sh.SetDebug(d)
 }
